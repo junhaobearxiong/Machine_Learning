@@ -104,18 +104,48 @@ class SumOfFeatures(Model):
 
 class Perceptron(Model):
 
-    def __init__(self):
+    def __init__(self, eta, num_iter):
         super().__init__()
-        # TODO: Initializations etc. go here.
-        pass
+        self.eta = eta # learning rate
+        self.num_iter = num_iter # number of training iterations
+        self.weights = None
+        
 
     def fit(self, X, y):
         # TODO: Write code to fit the model.
-        pass
+        num_examples, num_input_features = X.get_shape()
+        self.weights = np.empty([num_input_features], dtype = np.int)
+        
+        for i in range(self.num_iter):
+            for j in range(num_examples):
+               
+                # make prediction
+                # since X is a sparse matrix, need to use dot() method
+                dot_product = X[j, :].toarray().dot(np.transpose(self.weights))
+                y_pred = 0 # prediction
+                if dot_product >= 0:
+                    y_pred = 1
+                
+                # update weights if needed
+                if y[j] != y_pred: # if prediction is incorrect 
+                    if y[j] == 0:
+                        self.weights -= X[j, :].multiply(self.eta)
+                    else:
+                        self.weights += X[j, :].multiply(self.eta)
+        
 
     def predict(self, X):
         # TODO: Write code to make predictions.
-        pass
+        num_examples, num_input_features = X.shape
+        y_hat = np.empty([num_examples], dtype = np.int)
+        for i in range(num_examples):
+            dot_product = X[i, :].toarray().dot(np.transpose(self.weights))
+            if dot_product >= 0:
+                y_hat[i] = 1
+            else:
+                y_hat[i] = 0
+
+        return y_hat
 
 
 # TODO: Add other Models as necessary.

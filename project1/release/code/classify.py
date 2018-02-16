@@ -20,6 +20,8 @@ def get_args():
     parser.add_argument("--predictions-file", type=str, help="The predictions file to create. (Only used for testing.)")
 
     # TODO: Add optional command-line arguments as necessary.
+    parser.add_argument('--online-learning-rate', type=float, help='The learning rate for perceptron', default=1.0)
+    parser.add_argument('--online-training-iterations', type=int, help='The number of training iterations for online methods', default=5)
 
     args = parser.parse_args()
 
@@ -55,6 +57,8 @@ def main():
             model = models.Useless()
         elif args.algorithm.lower() == 'sof':
             model = models.SumOfFeatures()
+        elif args.algorithm.lower() == 'perceptron':
+            model = models.Perceptron(args.online_learning_rate, args.online_training_iterations)
         else:
             raise Exception('The model given by --model is not yet supported.')
 
