@@ -112,9 +112,8 @@ class Perceptron(Model):
         
 
     def fit(self, X, y):
-        # TODO: Write code to fit the model.
-        num_examples, num_input_features = X.get_shape()
-        self.weights = np.empty([num_input_features], dtype = np.int)
+        num_examples, num_input_features = X.shape
+        self.weights = np.zeros([num_input_features], dtype = np.int)
         
         for i in range(self.num_iter):
             for j in range(num_examples):
@@ -132,12 +131,12 @@ class Perceptron(Model):
                         self.weights -= X[j, :].multiply(self.eta)
                     else:
                         self.weights += X[j, :].multiply(self.eta)
-        
 
     def predict(self, X):
         # TODO: Write code to make predictions.
         num_examples, num_input_features = X.shape
         y_hat = np.empty([num_examples], dtype = np.int)
+        print(self.weights.shape)
         for i in range(num_examples):
             dot_product = X[i, :].toarray().dot(np.transpose(self.weights))
             if dot_product >= 0:
