@@ -55,7 +55,7 @@ def main():
         # TODO: Add other algorithms as necessary.
         if args.algorithm.lower() == 'useless':
             model = models.Useless()
-        elif args.algorithm.lower() == 'sof':
+        elif args.algorithm.lower() == 'sumoffeatures':
             model = models.SumOfFeatures()
         elif args.algorithm.lower() == 'perceptron':
             model = models.Perceptron(args.online_learning_rate, args.online_training_iterations)

@@ -1,2 +1,20 @@
 (1)
-1. 
+1. Recognizing hand written digits. One can either do classfication i.e. supervised
+learning, or clustering i.e. unsupervised learning. The data is available - MNIST.
+Success in classfication can be measured by the proportion of digits classfied
+correctly. Success in clustering can be measured by the proportion of digits in
+the correct cluster.
+
+2. 
+Supervised learning
+Pro: It is relatively easier to get good accuracy. There exist many algorithms
+with guarantee for good performance. It is also generally more efficient. 
+Con: Someone needs to hand label the training set. 
+
+Unsupervised learning
+Pro: No need to hand label data
+Con: It is relatively harder to get good performance. It is generally slower.
+Many good clustering algorithm e.g. :q
+
+
+Supervised learning is more natural for this problem.
