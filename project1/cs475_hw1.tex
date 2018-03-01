@@ -77,7 +77,7 @@
 	\begin{enumerate}
 		\item Give an example of a problem that could be solved with both supervised learning and unsupervised learning. Is data readily available for this problem? How would you measure your `success' in solving this problem for each approach?\newline
 		
-		Answer: Recognizing hand written digits. One can either do classification i.e. supervised learning, or clustering i.e. unsupervised learning. The data is available - MNIST. Success in classification can be measured by the proportion of digits classified correctly. Success in clustering can be measured by the proportion of digits in the correct cluster.  
+		Answer: Recognizing hand written digits. One can either do classification i.e. supervised learning, or clustering i.e. unsupervised learning. The data is available - MNIST. Success in classification can be measured by the proportion of digits classified correctly. Success in clustering can be measured by the proportion of digits in the correct cluster. Both should be measured on a test dataset and compare the results to the ground truth.
 		
 		\item What are the pros and cons of each approach? Which approach do you think the problem better lends itself to?\newline
 		
@@ -107,11 +107,11 @@ A complex model is suitable when large number of data is available for training 
 	\begin{enumerate}
 		\item Suppose you train an algorithm and obtain 96\% accuracy on the larger training set. Do you expect the trained model to obtain similar performance if used on newly acquired data? Why or why not?\newline
 		
-		Answer: One wouldn?t necessarily know the model?s performance on the test set, since despite having good performance on the training set, the model might be overfitting, or it might generalize well. One would need to know more about the model to answer the question.
+		Answer: One would not necessarily know the models performance on the test set, since despite having good performance on the training set, the model might be overfitting, or it might generalize well. One would need to know more about the model to answer the question.
 		
 		\item Suppose that, after training, someone gives you a new test set of 1,000 (image, label) pairs. Which do you expect to give greater accuracy on the test set: The model after trained on the dataset of 25,000 pairs or the model after trained on the dataset of 5,000 pairs? Explain your reasoning.\newline
 		
-		Answer: It depends. More data doesn?t necessarily lead to better performance. The data might be poorly labeled, contain lots of noises, or the model might be poor. But given good data and a sound model, one may expect better performance for the model trained on more data.
+		Answer: It depends. More data does not necessarily lead to better performance. The data might be poorly labeled, contain lots of noises, or the model might be poor. But given good data and a sound model, one may expect better performance for the model trained on more data.
 		
 		\item Suppose your models obtained greater than 90\% accuracy on the test set. How might you proceed in hope of improving accuracy further?\newline
 		
@@ -130,22 +130,53 @@ A complex model is suitable when large number of data is available for training 
 	\paragraph{5) Linear Regression (4 points)} Suppose you observe $n$ data points $(x_1, y_1), \ldots, (x_n, y_n)$, where all $x_i$ and all $y_i$ are scalars.
 	\begin{enumerate}
 		\item Suppose you choose the model $\hat{y} = w x$ and aim to minimize the sum of squares error $\sum_i (y_i - \hat{y}_i)^2$. Derive the closed-form solution for $w$ from scratch, where `from scratch' means without using the least-squares solution presented in class.
-		\begin{equation}
+		\begin{equation*}
 		\text{min} \sum_i (y_i - \hat{y}_i) ^2
-		= \text{min} \sum_i 2 y_i^2 - 2 w x_i y_i + w^2 x_i^2
-		\end{equation}
+		= \text{min} \sum_i y_i^2 - 2 w x_i y_i + w^2 x_i^2
+		\end{equation*}
 		
-		\begin{equation}
-		\partial{((y_i - \hat{y}_i) ^2)}/\partial(w) = \sum
-		\end{equation}
+		\begin{equation*}
+		\partial{((y_i - \hat{y}_i) ^2)}/\partial(w)
+		= \sum_i (-2 x_i y_i + 2 w x_i^2) = 0
+		\end{equation*}
+		
+		\begin{equation*}
+		2 w \sum_i x_i^2 = 2 \sum_i x_i y_i
+		\end{equation*}
+		
+		\begin{equation*}
+		w = \frac{\sum_i x_i y_i } { \sum_i x_i^2}
+		\end{equation*}
 		
 		\item Suppose you instead choose the model $\hat{y} = w \sin(x)$ and aim to minimize the sum of squares error $\sum_i (y_i - \hat{y}_i)^2$. Is there a closed-form solution for $w$? If so, what is it?
 	\end{enumerate}
+		
+		\begin{equation*}
+		\text{min} \sum_i (y_i - \hat{y}_i) ^2
+		= \text{min} \sum_i (y_i - w sin(x_i))^2
+		= \text{min} \sum_i y_i^2 - 2 w y_i sin(x_i) + w^2 sin(x_i)^2
+		\end{equation*}
+		
+		\begin{equation*}
+		\partial{((y_i - \hat{y}_i) ^2)}/\partial(w)
+		= \sum_i (-2 y_i sin(x_i)+ 2 w sin(x_i)^2) = 0
+		\end{equation*}
+		
+		\begin{equation*}
+		w = \frac{\sum_i y_i sin(x_i)} { \sum_i sin(x_i)^2}
+		\end{equation*}
+		
+		
 	
 	\paragraph{6) Logistic Regression (4 points)} Explain whether each statement is true or false. If false, explain why.
 	\begin{enumerate}
-		\item In the case of binary classification, optimizing the logistic loss is equivalent to minimizing the sum-of-squares error between our predicted probabilities for class 1, $\hat{\vy}$, and the observed probabilities for class 1, $\vy$.
-		\item One possible advantage of stochastic gradient descent is that it can sometimes escape local minima. However, in the case of logistic regression, the global minimum is the only minimum, and stochastic gradient descent is therefore never useful.
+		\item In the case of binary classification, optimizing the logistic loss is equivalent to minimizing the sum-of-squares error between our predicted probabilities for class 1, $\hat{\vy}$, and the observed probabilities for class 1, $\vy$.\newline
+		
+		Answer: False. First, to clarify, given $\hat{y}$ and $y$, we optimizing for maximum log likelihood for logistic regression or logistic loss, which are two different things. The negative log likelihood loss function is $\sum_i - log p(y_i = 1 | x_i, w)$ = $\sum_i - log \frac {1} {1 + e^{ - w^\intercal x_i}}$ for logistic regression. The logistic loss is $\sum_i log(1 + e^{-y_i w^\intercal x})$. The sum of square error can be expressed as $\sum_i (y_i - \hat{y_i})^2$. These are different loss functions, so one will get different gradients when performing gradient descent on each of the three.
+		
+		\item One possible advantage of stochastic gradient descent is that it can sometimes escape local minima. However, in the case of logistic regression, the global minimum is the only minimum, and stochastic gradient descent is therefore never useful.\newline
+		
+		Answer: False. Despite that stochastic gradient is different from the gradient average over the entire dataset or batch, SGD is much more efficient, since it only calculates gradient for one sample for updates, instead of the entire sample set. 	
 	\end{enumerate}
 	
 \end{document}
