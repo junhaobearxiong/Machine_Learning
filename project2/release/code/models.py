@@ -1,4 +1,6 @@
 import numpy as np
+import scipy as sp
+from scipy.special import expit
 
 class Model(object):
 
@@ -85,27 +87,20 @@ class LogisticRegression(Model):
         self.eta = eta # learning rate, default to .01
         self.num_iter = num_iter # number of GD iterations, default to 20
 
-    def sigmoid(self, z):
-        return 1 / (1 + np.exp(-z))
-
-    # function to apply sigmoid component wise to a vector
-    # return mu as a column vector 
-    def apply_sigmoid(self, X, w):
-        vsigmoid = np.vectorize(self.sigmoid)
-        mu = vsigmoid(np.dot(X, w))
-        return mu
-
     # vectorize the gradient update
     # we get partial_loss wrt w = transpose(X) * (y - mu)
     # where mu = sigmoid(X * w) where sigmoid is applied component wise
     def gradient_ascent(self, w, X, y):
         w_prime = w # define the new weights that we are going to update
+        
         for i in range(self.num_iter): # perform GD for num_iter iterations
             w_prime = np.reshape(w_prime, (w_prime.shape[0], 1))
-            mu = self.apply_sigmoid(X, w_prime)
+            # expit(x) is defined as expit(x) = 1/(1+exp(-x))
+            mu = sp.special.expit(np.dot(X, w_prime))
             gradient = np.dot(np.transpose(X), np.subtract(y, mu))
-            w_prime = np.add(w_prime, np.multiply(self.eta, gradient)) # update the weights 
-        return w_prime
+            # update the weights 
+            w_prime = np.add(w_prime, np.multiply(self.eta, gradient))         
+            return w_prime
 
     def fit(self, X, y):
         num_examples, num_input_features = X.shape
@@ -114,8 +109,10 @@ class LogisticRegression(Model):
         self.weights = np.transpose(np.zeros([num_input_features])) # need modify for feature selections 
         y = np.reshape(y, (y.shape[0], 1))
 
+        # turn the sparse matrix to a numpy array to do calculation
+        X_arr = X.toarray()
         # perform gradient ascent
-        self.weights = self.gradient_ascent(self.weights, X.todense(), y)
+        self.weights = self.gradient_ascent(self.weights, X_arr, y)
     
     def predict(self, X):
         num_examples, num_input_features = X.shape
@@ -130,11 +127,11 @@ class LogisticRegression(Model):
         if num_input_features > self.num_input_features:
             X = X[:, :self.num_input_features]
         
-        prob = self.apply_sigmoid(X.todense(), self.weights) # prediction probability
+        X_arr = X.toarray()
+        prob = sp.special.expit(np.dot(X_arr, self.weights))
         
         # when the prodiction probability >= .5, predict 1
         # otherwise predict 0
         y_hat = np.where(prob >= .5, 1, 0)
         return y_hat
 
-# TODO: Add other Models as necessary.
