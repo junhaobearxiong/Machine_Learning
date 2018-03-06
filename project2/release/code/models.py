@@ -149,6 +149,7 @@ class LogisticRegression(Model):
         # so we pick the num_feat # of features that have the smallest 
         # conditional entropy
         feats = np.argsort(cond_ent)[:num_feat]
+        print(cond_ent)
         return (feats, X[:, feats])
 
 
