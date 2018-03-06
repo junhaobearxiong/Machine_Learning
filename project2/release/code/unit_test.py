@@ -1,7 +1,7 @@
 import numpy as np
 from models import LogisticRegression
 
-X = np.matrix([[2, 2, 3], [1, 2, 4], [2, 3, 3], [1, 2, 4]])
+X = np.matrix([[1.6, 2, 3], [1.3, 2, 4], [2.1, 3, 3], [1.2, 2, 4]])
 Y = np.array([5, 5, 5, 4])
 
 
@@ -36,6 +36,9 @@ def feature_selection(X, y, num_feat):
     # iterate over columns 
     for i in range(X.shape[1]):
         x = X[:, i]
+        x_mean = np.mean(x)
+        x = np.where(x >= x_mean, 1, 0)
+
         cond_ent.append(calc_cond_entropy(x, y))
     
     # since we want to maximize -H(Y|X)

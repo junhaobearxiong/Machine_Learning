@@ -142,6 +142,10 @@ class LogisticRegression(Model):
         # iterate over columns 
         for i in range(X.shape[1]):
             x = X[:, i]
+            # discretize the continuous / more than 2 categories in discrete
+            # to binary data by setting the mean as the threshold 
+            x_mean = np.mean(x)
+            x = np.where(x >= x_mean, 1, 0)
             cond_ent.append(self.calc_cond_entropy(x, y))
         
         # since we want to maximize -H(Y|X)
@@ -149,7 +153,6 @@ class LogisticRegression(Model):
         # so we pick the num_feat # of features that have the smallest 
         # conditional entropy
         feats = np.argsort(cond_ent)[:num_feat]
-        print(cond_ent)
         return (feats, X[:, feats])
 
 
