@@ -82,15 +82,19 @@ class Useless(Model):
 
 class LogisticRegression(Model):
 
-    def __init__(self, eta, num_iter):
+    def __init__(self, eta, num_iter, num_feat):
         super().__init__()
         self.eta = eta # learning rate, default to .01
         self.num_iter = num_iter # number of GD iterations, default to 20
-
+        # number of features for selection
+        # -1 if don't do feature selection
+        self.num_feat = num_feat         
+        
     # vectorize the gradient update
     # we get partial_loss wrt w = transpose(X) * (y - mu)
     # where mu = sigmoid(X * w) where sigmoid is applied component wise
     def gradient_ascent(self, w, X, y):
+        
         w_prime = w # define the new weights that we are going to update
         
         for i in range(self.num_iter): # perform GD for num_iter iterations
@@ -102,7 +106,61 @@ class LogisticRegression(Model):
             w_prime = np.add(w_prime, np.multiply(self.eta, gradient))         
             return w_prime
 
+    # helper method
+    # calculate conditional entropy for one feature
+    # x is the array for a given feature, y is the corresponding labels
+    def calc_cond_entropy(x, y):
+        
+        cond_ent = 0
+        
+        for i in np.unique(y):
+            index_y = np.where(y == i)
+            p_yi = np.shape(index_y)[1] / np.shape(y)[0]
+
+            # elements of the column where the corrsponding y is y_i
+            z = x[index_y]
+            for j in np.unique(np.array(z)): # unique only takes array not matrix
+                index_z = np.where(z == j)
+                # condition upon a given y value
+                p_xj_cond = np.shape(index_z)[1] / np.shape(index_y)[1]
+                p_joint = p_xj_cond * p_yi
+                index_x = np.where(x == j)
+                # marginal is the probability over the entire x
+                p_xj_marg = np.shape(index_x)[1] / np.shape(y)[0]
+                cond_ent += p_joint * np.log(p_joint / p_xj_marg)
+        
+        return -cond_ent
+
+    # given the input feature, labels and number of features to select
+    # return: 1. the index of features in the input matrix
+    # 2. the input matrix composed of only the selected features
+    def feature_selection(self, X, y, num_feat):
+        
+        feats = [] # index of features to be selected
+        cond_ent = [] # conditional entropy of each features 
+        # iterate over columns 
+        for i in range(X.shape[1]):
+            x = X[:, i]
+            cond_ent.append(calc_cond_entropy(x, y))
+        
+        # since we want to maximize -H(Y|X)
+        # equivalently we minimize H(Y|X)
+        # so we pick the num_feat # of features that have the smallest 
+        # conditional entropy
+        feats = np.argsort(cond_ent)[:num_feat]
+        return (feats, X[:, feats])
+
+
     def fit(self, X, y):
+        
+        # if num_feat is negative or the number of features to select
+        # is larger than the number of available features,
+        # then we don't need to perform feature selections
+        if self.num_feat > 0 and self.num_feats < X.shape[1]:
+            # self.feats is a list of index of features which we are using
+            # in test time
+            self.feats, X = self.feature_selection(X, y, self.num_feat)
+            
         num_examples, num_input_features = X.shape
         self.num_input_features = num_input_features # for test time checking
 
@@ -115,6 +173,12 @@ class LogisticRegression(Model):
         self.weights = self.gradient_ascent(self.weights, X_arr, y)
     
     def predict(self, X):
+
+        if self.num_feat > 0 and self.num_feats < X.shape[1]:
+            # if we perfomred feature selection
+            # then only use the features selected for testing
+            X = X[:, self.feats]
+        
         num_examples, num_input_features = X.shape
         
         # if test features is less than training features, 

@@ -56,13 +56,11 @@ def main():
         # Load the training data.
         X, y = load_data(args.data)
 
-        # Create the model.
-        # TODO: Add other algorithms as necessary.
         if args.algorithm.lower() == 'useless':
             model = models.Useless()
         elif args.algorithm.lower() == 'logisticregression':
             model = models.LogisticRegression(args.online_learning_rate, 
-                args.gd_iterations)
+                args.gd_iterations, args.num_features_to_select)
         else:
             raise Exception('The model given by --model is not yet supported.')
 
