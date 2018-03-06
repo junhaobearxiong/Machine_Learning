@@ -1,7 +1,7 @@
 import numpy as np
 from models import LogisticRegression
 
-X = np.matrix([[2, 2], [1, 2], [2, 3], [1, 2]])
+X = np.matrix([[2, 2, 3], [1, 2, 4], [2, 3, 3], [1, 2, 4]])
 Y = np.array([5, 5, 5, 4])
 
 
@@ -46,7 +46,7 @@ def feature_selection(X, y, num_feat):
     return (feats, X[:, feats])
 
 
-print(feature_selection(X, Y, 1)[1])
+print(feature_selection(X, Y, 2)[1])
 
 
 
