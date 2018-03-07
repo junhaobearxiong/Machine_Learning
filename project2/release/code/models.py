@@ -144,6 +144,9 @@ class LogisticRegression(Model):
             x = X[:, i]
             # discretize the continuous / more than 2 categories in discrete
             # to binary data by setting the mean as the threshold 
+            # note that we only change x, not X
+            # so we are not modifying the features we actually use for 
+            # training
             x_mean = np.mean(x)
             x = np.where(x >= x_mean, 1, 0)
             cond_ent.append(self.calc_cond_entropy(x, y))
