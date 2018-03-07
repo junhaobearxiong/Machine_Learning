@@ -128,6 +128,9 @@ class LogisticRegression(Model):
                 index_x = np.where(x == j)
                 # marginal is the probability over the entire x
                 p_xj_marg = np.shape(index_x)[1] / np.shape(y)[0]
+                # note that the term in the log cannot be zero
+                # because every probablity we calculate are guarantee to be
+                # nonzero since they are length of nonempty array
                 cond_ent += p_joint * np.log(p_joint / p_xj_marg)
         
         return -cond_ent

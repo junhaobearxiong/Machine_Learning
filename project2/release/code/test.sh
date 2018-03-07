@@ -45,3 +45,18 @@ python3 classify.py --mode test --algorithm logisticregression \
 
 echo Accuracy for bio.dev
 python3 compute_accuracy.py datasets/bio.dev bio.dev.predictions
+
+python3 classify.py --mode train --algorithm logisticregression \
+--model-file vision.logisticregression.model \
+--data datasets/vision.train \
+--online-learning-rate .01 \
+--gd-iterations 20 \
+--num-features-to-select 10
+
+python3 classify.py --mode test --algorithm logisticregression \
+--model-file vision.logisticregression.model \
+--data datasets/vision.dev \
+--predictions-file vision.dev.predictions
+
+echo Accuracy for vision.dev
+python3 compute_accuracy.py datasets/vision.dev vision.dev.predictions
