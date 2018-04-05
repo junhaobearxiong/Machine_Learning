@@ -1,7 +1,7 @@
 import os
 
 
-ALGORITHM = 'logisticregression'
+ALGORITHM = 'adaboost'
 DATA_DIR = 'datasets'
 OUTPUT_DIR = 'output'
 DATASETS = ['easy', 'hard', 'bio', 'finance', 'nlp', 'speech', 'vision']

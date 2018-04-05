@@ -6,6 +6,7 @@ import pickle
 from cs475_types import ClassificationLabel, FeatureVector, Instance, Predictor
 from predictor import AdaBoost
 from data import load_data
+import numpy as np
 
 '''
 def load_data(filename):
@@ -98,7 +99,7 @@ def write_predictions(predictor, X, predictions_file):
     invalid_label_mask = (y_hat != 0) & (y_hat != 1)
     if any(invalid_label_mask):
         raise Exception('All predictions must be 0 or 1, but found other predictions.')
-    np.savetxt(args.predictions_file, y_hat, fmt='%d')       
+    np.savetxt(predictions_file, y_hat, fmt='%d')       
     
     '''
     try:

@@ -12,8 +12,7 @@ a = np.array([[6, 8, 3, 0],
                [5, 3, 0, 5],
                [4, 7, 5, 9]])
 
-
-print(stats.mode(a, axis = 1)[0].reshape(5))
+print(D * y)
 
 unique, unique_index, unique_count = np.unique(feat, return_index = True, return_counts = True)
 feat_sorted = np.argsort(feat)
@@ -38,7 +37,5 @@ for i, u in enumerate(unique_index):
 
 hs.append(h_t)
 hs = np.asarray(hs)
-print(hs)
 
 alpha = .5 * math.log((1-error) / error)
-print(1e-6)
