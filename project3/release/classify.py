@@ -143,7 +143,7 @@ def main():
         except pickle.PickleError:
             raise Exception("Exception while loading pickle.")
             
-        write_predictions(predictor, X, y, args.predictions_file)
+        write_predictions(predictor, X, args.predictions_file)
     else:
         raise Exception("Unrecognized mode.")
 
