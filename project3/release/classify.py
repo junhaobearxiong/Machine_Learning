@@ -4,7 +4,10 @@ import sys
 import pickle
 
 from cs475_types import ClassificationLabel, FeatureVector, Instance, Predictor
+from predictor import AdaBoost
+from data import load_data
 
+'''
 def load_data(filename):
     instances = []
     with open(filename) as reader:
@@ -42,7 +45,7 @@ def load_data(filename):
             instances.append(instance)
 
     return instances
-
+'''
 
 def get_args():
     parser = argparse.ArgumentParser(description="This is the main test harness for your algorithms.")
@@ -54,6 +57,8 @@ def get_args():
                         help="The name of the model file to create/load.")
     parser.add_argument("--predictions-file", type=str, help="The predictions file to create.")
     parser.add_argument("--algorithm", type=str, help="The name of the algorithm for training.")
+    parser.add_argument("--num-boosting-iterations", type=int, help="The number of boosting iterations to run.",
+    default=10)
 
     # TODO This is where you will add new command line options
     
@@ -75,14 +80,27 @@ def check_args(args):
             raise Exception("model file specified by --model-file does not exist.")
 
 
-def train(instances, algorithm):
+def train(X, y, algorithm, num_iter):
     # TODO Train the model using "algorithm" on "data"
     # TODO This is where you will add new algorithms that will subclass Predictor
+    if algorithm == 'adaboost':
+        predictor = AdaBoost(num_iter)
+        predictor.train(X, y)
+    else:
+        raise Exception(algorithm + ' has not yet been implemented')
     
-    return None
+    return predictor
 
 
-def write_predictions(predictor, instances, predictions_file):
+def write_predictions(predictor, X, predictions_file):
+    # Compute and save the predictions.
+    y_hat = predictor.test(X)
+    invalid_label_mask = (y_hat != 0) & (y_hat != 1)
+    if any(invalid_label_mask):
+        raise Exception('All predictions must be 0 or 1, but found other predictions.')
+    np.savetxt(args.predictions_file, y_hat, fmt='%d')       
+    
+    '''
     try:
         with open(predictions_file, 'w') as writer:
             for instance in instances:
@@ -92,17 +110,17 @@ def write_predictions(predictor, instances, predictions_file):
                 writer.write('\n')
     except IOError:
         raise Exception("Exception while opening/writing file for writing predicted labels: " + predictions_file)
-
+    '''
 
 def main():
     args = get_args()
 
     if args.mode.lower() == "train":
         # Load the training data.
-        instances = load_data(args.data)
+        X, y = load_data(args.data)
 
         # Train the model.
-        predictor = train(instances, args.algorithm)
+        predictor = train(X, y, args.algorithm, args.num_boosting_iterations)
         try:
             with open(args.model_file, 'wb') as writer:
                 pickle.dump(predictor, writer)
@@ -113,7 +131,7 @@ def main():
             
     elif args.mode.lower() == "test":
         # Load the test data.
-        instances = load_data(args.data)
+        X, y = load_data(args.data)
 
         predictor = None
         # Load the model.
@@ -125,7 +143,7 @@ def main():
         except pickle.PickleError:
             raise Exception("Exception while loading pickle.")
             
-        write_predictions(predictor, instances, args.predictions_file)
+        write_predictions(predictor, X, y, args.predictions_file)
     else:
         raise Exception("Unrecognized mode.")
 
