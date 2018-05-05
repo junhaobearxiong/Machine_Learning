@@ -1,10 +1,10 @@
 import os
 from datetime import datetime
 
-ALGORITHMS = ['stochastic_k_means']
+ALGORITHMS = ['lambda_means']
 DATA_DIR = '../datasets'
 OUTPUT_DIR = 'output'
-DATASETS = ['easy', 'hard', 'bio', 'finance', 'iris', 'speech', 'vision']
+DATASETS = ['easy', 'hard', 'finance', 'iris', 'speech', 'vision']
 
 
 def run_on_dataset(dataset, algorithm, cluster_lambda=0., number_of_clusters=2, clustering_training_iterations=10):

@@ -84,8 +84,8 @@ class LambdaMeans(Model):
     def __init__(self):
         super().__init__()
         self.mu = None
-        self.num_k = 0
         self.r_matrix = None
+        self.num_k = 0
 
     def compute_dist(self, x, y):
         distance = np.sqrt(np.dot(np.transpose(x - y), (x - y)))
@@ -133,9 +133,13 @@ class LambdaMeans(Model):
                 self.num_k += 1
     
     def M_step(self, X):
+        index = np.where(~self.r_matrix[:, :self.num_k].any(axis = 0))[0]
+        self.mu = np.delete(self.mu, index, axis = 1)
+        self.r_matrix = np.delete(self.r_matrix, index, axis = 1)
+        self.num_k -= index.shape[0]
         self.mu = np.dot(np.transpose(X), self.r_matrix[:, :self.num_k])
         cluster_size = np.sum(self.r_matrix[:, :self.num_k], axis = 0)
-        self.mu = np.multiply(self.mu, np.reciprocal(cluster_size))
+        self.mu = np.divide(self.mu, cluster_size)
 
     def get_default_lambda(self, X, x_bar):
         total_dist = 0
@@ -146,8 +150,10 @@ class LambdaMeans(Model):
     # set mu's for empty clusters to the zero vector
     def set_empty_cluster(self):
         # columns of r_matrix that have all zero entries
-        index = np.where(~self.r_matrix[:, :self.num_k].any(axis = 0))[0]
-        self.mu[:, index] = 0
+        #index = np.where(~self.r_matrix[:, :self.num_k].any(axis = 0))[0]
+        #self.mu[:, index] = 0
+        #self.mu = np.delete(self.mu, index, axis = 1)
+        self.mu = np.concatenate([self.mu, np.zeros((self.mu.shape[0], 1))], axis = 1)
 
     def fit(self, X, _, **kwargs):
         """  Fit the lambda means model  """
